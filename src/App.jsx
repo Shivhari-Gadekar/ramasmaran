@@ -80,9 +80,10 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-center sm:justify-between items-center">
-          <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 text-center">
-            🕉️ Daily Chanting Leaderboard
+        <div className="text-center p-2">
+          <h3 className="text-md font-bold">Ram Ram</h3>
+          <h1 className="text-2xl sm:text-3xl font-bold text-blue-600">
+            Ramasmaran Leaderboard
           </h1>
         </div>
       </header>
@@ -109,7 +110,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="text-center py-6 text-sm text-gray-500">
-        Made with ❤️ for the chanting family • {new Date().getFullYear()}
+        Made with ❤️ for the ramsnehi family • {new Date().getFullYear()}
       </footer>
     </div>
   );
