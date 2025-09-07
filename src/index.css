@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@keyframes highlightFade {
+  0%   { background-color: #fef08a; } /* yellow-200 */
+  100% { background-color: #eff6ff; } /* blue-50 */
+}
+
+.highlight-row {
+  animation: highlightFade 1.5s ease forwards;
+}

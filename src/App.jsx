@@ -1,14 +1,35 @@
 // src/App.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UpdateForm from "./components/UpdateForm";
 import TabbedLeaderboard from "./components/TabbedLeaderboard";
 import useLeaderboard from "./hooks/useLeaderboard";
 import { deleteUser, editUser, getLeaderboard } from "./api/api";
 
+import {
+  getTodayEntries,
+  getWeeklyEntries,
+  getAllTimeEntries,
+} from "./utils/filterLeaderboard";
+import { deduplicateEntries } from "./utils/deduplicate";
+
 export default function App() {
   const { leaderboard, loading, setLeaderboard } = useLeaderboard();
   const [currentUser, setCurrentUser] = useState("");
 
+  // Fetch fresh leaderboard on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getLeaderboard();
+        setLeaderboard(data);
+      } catch (err) {
+        console.error("Failed to fetch leaderboard:", err);
+      }
+    };
+    fetchData();
+  }, [setLeaderboard]);
+
+  // Handle editing a user
   const handleEdit = async (name, minutes) => {
     try {
       const updated = await editUser(name, minutes);
@@ -19,6 +40,7 @@ export default function App() {
     }
   };
 
+  // Handle deleting a user
   const handleDelete = async (name) => {
     try {
       const updated = await deleteUser(name);
@@ -47,6 +69,13 @@ export default function App() {
     );
   }
 
+  // Flatten leaderboard and remove duplicates (same user same day)
+  const flatLeaderboard = deduplicateEntries([
+    ...(leaderboard.daily || []),
+    ...(leaderboard.weekly || []),
+    ...(leaderboard.allTime || []),
+  ]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
       {/* Header */}
@@ -60,7 +89,6 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 space-y-8">
-        {/* Update form */}
         <UpdateForm
           onUpdate={async (selectedUser) => {
             setCurrentUser(selectedUser);
@@ -69,17 +97,14 @@ export default function App() {
           }}
         />
 
-        {/* Leaderboards */}
         <TabbedLeaderboard
-          daily={leaderboard?.daily || []}
-          weekly={leaderboard?.weekly || []}
-          allTime={leaderboard?.allTime || []}
+          daily={getTodayEntries(flatLeaderboard)}
+          weekly={getWeeklyEntries(flatLeaderboard)}
+          allTime={getAllTimeEntries(flatLeaderboard)}
           currentUser={currentUser}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-
-
       </main>
 
       {/* Footer */}
